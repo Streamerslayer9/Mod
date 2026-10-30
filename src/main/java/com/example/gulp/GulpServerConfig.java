@@ -42,6 +42,12 @@ public final class GulpServerConfig {
     public static final ForgeConfigSpec.BooleanValue MCA_COMFORT_ENABLED;
     public static final ForgeConfigSpec.BooleanValue MCA_VILLAGER_XP_ENABLED;
     public static final ForgeConfigSpec.IntValue MCA_VILLAGER_XP_DAILY_CAP;
+    public static final ForgeConfigSpec.BooleanValue MCA_TRADE_ENABLED;
+    public static final ForgeConfigSpec.IntValue MCA_TRADE_DISCOUNT_START_HEARTS;
+    public static final ForgeConfigSpec.IntValue MCA_TRADE_DISCOUNT_FULL_HEARTS;
+    public static final ForgeConfigSpec.IntValue MCA_TRADE_MAX_DISCOUNT_PERCENT;
+    public static final ForgeConfigSpec.IntValue MCA_LOW_AFFECTION_HEARTS;
+    public static final ForgeConfigSpec.IntValue MCA_TRADE_MAX_SURCHARGE_PERCENT;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -160,6 +166,26 @@ public final class GulpServerConfig {
         MCA_VILLAGER_XP_DAILY_CAP = b
                 .comment("The most XP one villager can earn per Minecraft day from talking, gifts and rides together (comforting is not counted).")
                 .defineInRange("mcaVillagerXpDailyCap", 30, 1, 1000);
+        MCA_TRADE_ENABLED = b
+                .comment("Trade prices with adult MCA villagers follow their hearts with you: a discount for villagers who like you a lot,",
+                        "a surcharge for villagers who don't. Type /gulp villagerinfo next to a villager to see their current price change.")
+                .define("mcaTradeEnabled", true);
+        MCA_TRADE_DISCOUNT_START_HEARTS = b
+                .comment("Hearts above which a villager starts giving you a discount.")
+                .defineInRange("mcaTradeDiscountStartHearts", 40, 0, 500);
+        MCA_TRADE_DISCOUNT_FULL_HEARTS = b
+                .comment("Hearts at which the discount reaches its maximum.")
+                .defineInRange("mcaTradeDiscountFullHearts", 100, 1, 500);
+        MCA_TRADE_MAX_DISCOUNT_PERCENT = b
+                .comment("The biggest discount, in percent of the normal price. 0 = no discounts.")
+                .defineInRange("mcaTradeMaxDiscountPercent", 20, 0, 90);
+        MCA_LOW_AFFECTION_HEARTS = b
+                .comment("Hearts below which a villager is cold to you: they charge extra and pred villagers turn down comforting you.",
+                        "The surcharge reaches its maximum 40 hearts below this.")
+                .defineInRange("mcaLowAffectionHearts", -10, -500, 0);
+        MCA_TRADE_MAX_SURCHARGE_PERCENT = b
+                .comment("The biggest surcharge, in percent of the normal price. 0 = no surcharges.")
+                .defineInRange("mcaTradeMaxSurchargePercent", 25, 0, 200);
         MCA_STATUS_MESSAGE = b
                 .comment("Test/dev helper: when a player joins, show a chat line saying whether this mod connected to Minecraft Comes Alive.",
                         "Set to false to turn it off once you've confirmed it works.")

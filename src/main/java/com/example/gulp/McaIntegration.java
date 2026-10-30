@@ -731,11 +731,26 @@ public final class McaIntegration {
                         || COMFORT_VILLAGER_COOLDOWN.containsKey(le.getUUID()) || voreTypeOf(le) != VoreType.PRED) continue;
                 VillagerTrait trait = traitOf(le);
                 if (p.getHealth() > p.getMaxHealth() * trait.comfortHpFraction) continue; // shy preds wait until you are worse off
-                if (heartsWith(le, p) < Math.round(GulpServerConfig.MCA_AFFECTION_HEARTS.get() * trait.heartsMult)) continue;
+                int hearts = heartsWith(le, p);
+                if (hearts < Math.round(GulpServerConfig.MCA_AFFECTION_HEARTS.get() * trait.heartsMult)) {
+                    if (hearts <= GulpServerConfig.MCA_LOW_AFFECTION_HEARTS.get() && snub(p, le, trait, now)) break;
+                    continue;
+                }
                 makeComfortOffer(p, le, trait, now);
                 break;
             }
         }
+    }
+
+    private static final Map<UUID, Long> SNUB_COOLDOWN = new HashMap<>();
+
+    /** A pred who doesn't like a hurt player says so instead of offering comfort (at most once every 3 minutes per villager). */
+    private static boolean snub(ServerPlayer p, LivingEntity villager, VillagerTrait trait, long now) {
+        SNUB_COOLDOWN.values().removeIf(t -> t <= now);
+        if (SNUB_COOLDOWN.containsKey(villager.getUUID())) return false;
+        SNUB_COOLDOWN.put(villager.getUUID(), now + 3600);
+        p.sendSystemMessage(Component.literal("<").append(villager.getName()).append("> " + trait.snubLine()));
+        return true;
     }
 
     private static void makeComfortOffer(ServerPlayer p, LivingEntity villager, VillagerTrait trait, long now) {
@@ -839,6 +854,7 @@ public final class McaIntegration {
             p.sendSystemMessage(Component.literal("Nearest: ").append(le.getName()).append(
                     " | personality " + personalityOf(le) + " (" + a + ") | kind " + voreKind(le) + comfortNote(le) + " | hearts " + hearts + " (needs " + need + ")"
                     + " | child: " + isProtectedChild(le)));
+            p.sendSystemMessage(Component.literal("Trade prices with you: " + VillagerTrade.describe(hearts)));
             if (isProtectedChild(le)) why.add("They are a child: never asked, never swallowed.");
             VoreType type = voreTypeOf(le);
             if (type == VoreType.PRED) why.add("They are a pred type: preds don't ask to be carried.");

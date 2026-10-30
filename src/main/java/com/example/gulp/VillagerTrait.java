@@ -69,6 +69,33 @@ public enum VillagerTrait {
         };
     }
 
+    /** What a villager says when you open a trade and their prices are lower for you. */
+    public String tradeDiscountLine() {
+        return switch (this) {
+            case CONFIDENT -> "For you? Best prices in the village!";
+            case SHY -> "Um... I made it a little cheaper for you. Since you're nice to me...";
+            case NONE -> "Friends get a better price.";
+        };
+    }
+
+    /** What a villager says when you open a trade and their prices are higher for you. */
+    public String tradeSurchargeLine() {
+        return switch (this) {
+            case CONFIDENT -> "Prices are what they are. Take it or leave it.";
+            case SHY -> "S-sorry... it costs a bit more for people I don't know well.";
+            case NONE -> "I don't know you well enough for the usual price.";
+        };
+    }
+
+    /** What a pred says instead of offering comfort when they don't like the hurt player. */
+    public String snubLine() {
+        return switch (this) {
+            case CONFIDENT -> "Hurt? Sounds like your problem. Maybe be nicer to people next time.";
+            case SHY -> "Um... you look hurt, but... I don't really want to be near you right now.";
+            case NONE -> "I'm not helping you.";
+        };
+    }
+
     /** What a pred says when the player climbs out early. */
     public String earlyExitLine() {
         return switch (this) {
