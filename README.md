@@ -209,6 +209,13 @@ reactions switch themselves off with one line in the log.
   player while held, `rank` hunger every 2 seconds. The level, XP, points and ranks are saved on each villager itself (their own
   data in that world's save), so every villager in every world has its own. The server checks every purchase (action 21). Code:
   VillagerPerk.java, VillagerHolding (rankOf, pointsFree, buyPerk). The network protocol is now "6".
+- Trade prices and low affection: when you trade with an adult MCA villager, prices follow their hearts with you (VillagerTrade.java).
+  Above mcaTradeDiscountStartHearts (default 40) you get a discount that grows to mcaTradeMaxDiscountPercent (20%) at
+  mcaTradeDiscountFullHearts (100). Below mcaLowAffectionHearts (default -10) you pay extra, growing to mcaTradeMaxSurchargePercent
+  (25%) 40 hearts lower. The villager says a line about it (shy and confident ones differently, at most once every 2 minutes).
+  Pred villagers who don't like a hurt player (hearts at or below mcaLowAffectionHearts) say so instead of offering comfort.
+  /gulp villagerinfo shows the current price change. Switch: mcaTradeEnabled. This works through vanilla's trade "special price",
+  so MCA's own price rules (if any) still apply on top.
 - Child protection (always on, even if mcaIntegrationEnabled is false, as long as MCA is installed): baby villagers and every MCA villager
   who is not an adult (baby, toddler, child, teen) can never be swallowed or digested. If one is somehow already inside (an old save), they
   are let out on the next tick. Vanilla baby villagers are protected too. Code: McaIntegration.isProtectedChild / isChildEntry.
