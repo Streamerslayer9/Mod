@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -151,6 +152,20 @@ public final class McaScreenHooks {
     }
 
     private static int lastRight = -1;
+
+    /**
+     * MCA's screen doesn't pass clicks on to buttons that were only added as listeners, so the Perks button never heard them.
+     * We catch the click ourselves before MCA's screen does: if it lands on the visible Perks button, press it and use up the click.
+     */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onMouseClick(ScreenEvent.MouseButtonPressed.Pre e) {
+        if (e.getButton() != 0 || e.getScreen() != shownScreen || perksButton == null || villager == null) return;
+        if (!perksButton.visible || !perksButton.active || !perksButton.isMouseOver(e.getMouseX(), e.getMouseY())) return;
+        LOGGER.info("[Gulp] Perks button clicked for villager {}", villager.getName().getString());
+        perksButton.playDownSound(Minecraft.getInstance().getSoundManager());
+        perksButton.onPress();
+        e.setCanceled(true);
+    }
 
     /** MCA adds its buttons after the init event, so look again each frame and snap the Perks button to Talk once they exist. */
     private static void reanchor(Screen screen) {
